@@ -35,33 +35,39 @@ def read_csv_as_numpy():
         image_array = np.array(image)
         if image_array.shape != (350, 350):
             continue
+
+        image = image.resize((50, 50), Image.LANCZOS)
+        image_array = np.array(image).reshape(-1)
         images.append(image_array)  # Convert Tensor to NumPy array
+
     
     images = np.array(images, dtype=np.float32)  # Convert list to NumPy array
     labels = np.array(labels, dtype=np.int32)   # Convert labels to NumPy array
+    filepaths = np.array(filepaths, dtype=str)
 
     # Shuffle the dataset
     indices = np.arange(len(images))
     np.random.shuffle(indices)
     images = images[indices]
     labels = labels[indices]
+    filepaths = filepaths[indices]
 
     # Train-validation split
     train_size = int(0.8 * len(images))
     X_train, X_val = images[:train_size], images[train_size:]
     y_train, y_val = labels[:train_size], labels[train_size:]
 
-    return X_train, y_train, X_val, y_val, classes
+    return X_train, y_train, X_val, y_val, classes, filepaths
 
 if __name__ == '__main__':
-    X_tr, Y_tr, X_val, Y_val, classes = read_csv_as_numpy()
+    X_tr, Y_tr, X_val, Y_val, classes, filepaths = read_csv_as_numpy()
 
     print(X_tr.shape)
-    print(X_tr[0, :])
-    print(Y_tr.shape)
-    print(Y_tr[0])
+    # print(X_tr[0, :])
+    # print(Y_tr.shape)
+    # print(Y_tr[0])
     
-    print(X_val.shape)
-    print(Y_val.shape)
+    # print(X_val.shape)
+    # print(Y_val.shape)
 
-    print(classes)
+    # print(classes)

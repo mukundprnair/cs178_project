@@ -3,6 +3,8 @@ import pandas as pd
 import os
 import tensorflow as tf 
 from sklearn.preprocessing import LabelEncoder
+from PIL import Image
+from collections import defaultdict
 
 def read_csv_as_numpy():
     # Load CSV and prepare file paths
@@ -16,7 +18,7 @@ def read_csv_as_numpy():
     df['emotion'] = df['emotion'].str.upper()
     df['encoded_label'] = label_encoder.fit_transform(df['emotion'])
     classes = label_encoder.classes_ 
-    print(f"Classes: {clas bg tre43ses}")
+    print(f"Classes: {classes}")
 
     # Load images and labels into NumPy arrays
     filepaths = df['image'].values
@@ -26,16 +28,16 @@ def read_csv_as_numpy():
     i = 0
     for filepath in filepaths:
         # Load and preprocess image
-        print("./images/" + filepath)
-        image = tf.io.read_file("./images/" + filepath)
-        image = tf.image.decode_jpeg(image, channels=3)
-        image = tf.image.resize(image, [350, 350])
-        image = image / 255.0  # Normalize pixel values
-        images.append(image.numpy())  # Convert Tensor to NumPy array
-        i += 1
-        if i == 4:
-            break
+        image_filepath = "./images/" + filepath
+        image = Image.open(image_filepath)
+        if image.mode == 'RGB':
+            image = image.convert('L')  # 'L' mode is for grayscale
 
+        image_array = np.array(image)
+        if image_array.shape != (350, 350):
+            continue
+        images.append(image_array)  # Convert Tensor to NumPy array
+    
     images = np.array(images, dtype=np.float32)  # Convert list to NumPy array
     labels = np.array(labels, dtype=np.int32)   # Convert labels to NumPy array
 
@@ -55,8 +57,10 @@ def read_csv_as_numpy():
 if __name__ == '__main__':
     X_tr, Y_tr, X_val, Y_val = read_csv_as_numpy()
 
-    print(X_tr)
-    print(Y_tr)
-
-    print(X_val)
-    print(Y_val)
+    print(X_tr.shape)
+    print(X_tr[0, :])
+    print(Y_tr.shape)
+    print(Y_tr[0])
+    
+    print(X_val.shape)
+    print(Y_val.shape)

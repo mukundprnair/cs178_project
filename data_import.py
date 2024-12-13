@@ -18,7 +18,6 @@ def read_csv_as_numpy():
     df['emotion'] = df['emotion'].str.upper()
     df['encoded_label'] = label_encoder.fit_transform(df['emotion'])
     classes = label_encoder.classes_ 
-    print(f"Classes: {classes}")
 
     # Load images and labels into NumPy arrays
     filepaths = df['image'].values
@@ -52,10 +51,10 @@ def read_csv_as_numpy():
     X_train, X_val = images[:train_size], images[train_size:]
     y_train, y_val = labels[:train_size], labels[train_size:]
 
-    return X_train, y_train, X_val, y_val
+    return X_train, y_train, X_val, y_val, classes
 
 if __name__ == '__main__':
-    X_tr, Y_tr, X_val, Y_val = read_csv_as_numpy()
+    X_tr, Y_tr, X_val, Y_val, classes = read_csv_as_numpy()
 
     print(X_tr.shape)
     print(X_tr[0, :])
@@ -64,3 +63,5 @@ if __name__ == '__main__':
     
     print(X_val.shape)
     print(Y_val.shape)
+
+    print(classes)

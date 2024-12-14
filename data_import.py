@@ -20,9 +20,10 @@ def read_csv_as_numpy():
 
     # Load images and labels into NumPy arrays
     filepaths = df['image'].values
-    labels = df['encoded_label'].values
 
     images = []
+    label_out = []
+    filepath_out = []
     i = 0
     for filepath in filepaths:
         # Load and preprocess image
@@ -38,30 +39,31 @@ def read_csv_as_numpy():
         image = image.resize((50, 50), Image.LANCZOS)
         image_array = np.array(image).reshape(-1)
         images.append(image_array)  # Convert Tensor to NumPy array
+        new_df = df[df['filepath'] == image_filepath]
 
+        # Extract the emotion index
+        emotion = new_df['emotion'].values[0]  # Get the emotion value
+        emotion_index = label_encoder.transform([emotion])[0]  # Get the encoded index of the emotion
+        label_out.append(emotion_index)
+
+        filepath_out.append(image_filepath)
     
     images = np.array(images, dtype=np.float32)  # Convert list to NumPy array
-    labels = np.array(labels, dtype=np.int32)   # Convert labels to NumPy array
-    filepaths = np.array(filepaths, dtype=str)
+    labels = np.array(label_out, dtype=np.int32)   # Convert labels to NumPy array
+    filepaths = np.array(filepath_out, dtype=str)
 
     # Shuffle the dataset
-    indices = np.arange(len(images))
-    np.random.shuffle(indices)
-    images = images[indices]
-    labels = labels[indices]
-    filepaths = filepaths[indices]
+    indices = np.arange(len(images))  # Create an array of indices
+    np.random.shuffle(indices)  # Shuffle the indices in-place
+    images = images[indices]  # Apply the shuffled indices to images
+    labels = labels[indices]  # Apply the shuffled indices to labels
+    filepaths = filepaths[indices]  # Apply the shuffled indices to filepaths
 
-    # Train-validation split
-    train_size = int(0.8 * len(images))
-    X_train, X_val = images[:train_size], images[train_size:]
-    y_train, y_val = labels[:train_size], labels[train_size:]
-
-    return X_train, y_train, X_val, y_val, classes, filepaths
+    return images, labels, classes, filepaths
 
 if __name__ == '__main__':
-    X_tr, Y_tr, X_val, Y_val, classes, filepaths = read_csv_as_numpy()
+    images, labels, classes, filepaths = read_csv_as_numpy()
 
-    print(X_tr.shape)
     # print(X_tr[0, :])
     # print(Y_tr.shape)
     # print(Y_tr[0])

@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import os
-import tensorflow as tf 
 from sklearn.preprocessing import LabelEncoder
 from PIL import Image
 from collections import defaultdict
